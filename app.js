@@ -12,7 +12,7 @@ const ws=new WebSocket(wsProto+'://'+location.host);
 
 const channels=new Set();const typingUsers=new Map();
 
-// SAFE: no innerHTML for untrusted data
+// safer: no innerHTML for untrusted data
 function addChannel(name){
   if(channels.has(name)) return;
   channels.add(name);

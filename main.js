@@ -40,11 +40,11 @@ const clients  = new Map();   // ws -> {id, username, channels}
 const DEFAULT_CHANNELS = ['general','tech','random'];
 for (const n of DEFAULT_CHANNELS) channels.set(n, {members:new Set(),history:[],typing:new Set()});
 
-/* HTTPS server */
+/* https server */
 const server = https.createServer(tlsOptions, (req, res) => {
   const { url, method, headers } = req;
 
-  // Strict, no-inline JS; allow inline CSS if you still have it in HTML
+  // Strict, no-inline JS;
   const csp = [
     `default-src 'self'`,
     `script-src 'self'`,
@@ -65,7 +65,7 @@ const server = https.createServer(tlsOptions, (req, res) => {
     'permissions-policy': 'camera=(), microphone=(), geolocation=()'
   };
 
-  // --- API endpoints (unchanged behavior) ---
+  // --- api endpoints ---
   if (method === 'GET' && url === '/channels') {
     res.writeHead(200, { ...secHeaders, 'content-type': 'application/json; charset=utf-8', 'cache-control':'no-store' });
     res.end(JSON.stringify({ channels: [...channels.keys()] }));
@@ -86,7 +86,7 @@ const server = https.createServer(tlsOptions, (req, res) => {
     return;
   }
 
-  // --- Static files from /public ---
+  // --- static files from /public ---
   const pathname = (url || '/').split('?')[0] || '/';
   let filePath = pathname === '/'
     ? path.join(PUBLIC_DIR, 'index.html')
