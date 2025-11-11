@@ -7,7 +7,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const PUBLIC_DIR = path.join(__dirname, 'public');
+const PUBLIC_DIR = __dirname;
 
 
 const PORT = 443;
@@ -48,7 +48,7 @@ const server = https.createServer(tlsOptions, (req, res) => {
   const csp = [
     `default-src 'self'`,
     `script-src 'self'`,
-    `style-src 'self'`,
+    `style-src 'self' 'unsafe-inline'`,
     `img-src 'self' data:`,
     `connect-src 'self' wss:`,
     `object-src 'none'`,
