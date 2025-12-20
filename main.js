@@ -32,12 +32,18 @@ const badWords = new Set(BAD_BASE.map(w=>w.toLowerCase()));
 const TOKEN_RE = /\b([A-Za-z0-9]+(?:['-][A-Za-z0-9]+)*)\b/g;
 const normalizeWord = s => String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
 const censorBySet = t => t?.replace(TOKEN_RE, tok => badWords.has(normalizeWord(tok)) ? '*'.repeat(tok.length) : tok) ?? t;
+function containsBadWord(s){
+  if (!s) return false;
+  return [...String(s).matchAll(TOKEN_RE)]
+    .some(m => badWords.has(normalizeWord(m[1])));
+}
+
 async function loadBadWords(){let a=0;for(const u of BAD_WORD_SOURCES){try{const r=await fetch(u);if(!r.ok)throw new Error(r.status);for(const raw of (await r.text()).split(/\r?\n/)){const line=raw.trim();if(!line||line.startsWith('#'))continue;const n=normalizeWord(line);if(!n||/^\d+$/.test(n)||n.length<2)continue;if(!badWords.has(n)){badWords.add(n);a++;}}}catch(e){console.error('Bad-words fetch failed:',u,e.message)}}console.log(`Profanity list active: ${badWords.size} words (loaded ${a}, fallback ${BAD_BASE.length})`)}
 /* ------------------------------------ */
 
 const channels = new Map();   // name -> {members, history, typing}
 const clients  = new Map();   // ws -> {id, username, channels}
-const DEFAULT_CHANNELS = ['general','tech','random'];
+const DEFAULT_CHANNELS = ['general','media','memes'];
 for (const n of DEFAULT_CHANNELS) channels.set(n, {members:new Set(),history:[],typing:new Set()});
 
 /* https server */
@@ -153,16 +159,53 @@ wss.on('connection', (ws, req) => {
         send(ws, { type:'ready', userId:id, username:user.username }); break;
       }
       case 'join': {
+        if (containsBadWord(msg.channel)) {
+          send(ws, {
+            type: 'error',
+            message: 'You cannot create or join a channel with inappropriate language.'
+          });
+          break;
+        }
+
         const name = sanitizeName(msg.channel) || 'general';
-        let ch = channels.get(name); if (!ch) { ch = {members:new Set(),history:[],typing:new Set()}; channels.set(name, ch) }
+
+        let ch = channels.get(name);
+        if (!ch) {
+          ch = { members: new Set(), history: [], typing: new Set() };
+          channels.set(name, ch);
+        }
+
         if (!ch.members.has(ws)) {
-          ch.members.add(ws); user.channels.add(name);
-          send(ws, { type:'history', channel:name, messages:ch.history.slice(-100) });
-          broadcast(name, { type:'system', channel:name, text:`${user.username} joined`, ts:Date.now() });
-          if (ch.history.length===0 && ch.members.size===1 && !DEFAULT_CHANNELS.includes(name))
-            for (const sock of wss.clients) send(sock, { type:'channels', channels:[...channels.keys()] });
-        } break;
+          ch.members.add(ws);
+          user.channels.add(name);
+
+          send(ws, {
+            type: 'history',
+            channel: name,
+            messages: ch.history.slice(-100)
+          });
+
+          broadcast(name, {
+            type: 'system',
+            channel: name,
+            text: `${user.username} joined`,
+            ts: Date.now()
+          });
+
+          if (
+            ch.history.length === 0 &&
+            ch.members.size === 1 &&
+            !DEFAULT_CHANNELS.includes(name)
+          ) {
+            for (const sock of wss.clients) {
+              send(sock, { type: 'channels', channels: [...channels.keys()] });
+            }
+          }
+        }
+
+        break;
       }
+
       case 'leave': {
         const name = sanitizeName(msg.channel);
         const ch = channels.get(name); if (!ch) break;
