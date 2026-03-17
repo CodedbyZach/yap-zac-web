@@ -2,9 +2,9 @@
 YapZac is a modern chat app built by [Coded by Zach](https://codedbyzach.com/)
 
 Try it for yourself at [its official site](https://yapzac.codedbyzach.com) 
+Desktop Version available [here](https://github.com/CodedbyZach/yap-zac-desktop/releases)
+Note: subdomain yapzac might be down frequently
 
--# Note: subdomain yapzac might be down frequently
 
 
-
-# Note for devs/contributors: to run do ```npm install``` then ```bash run.sh```, but you need a certificate and a website key to run it. Join discord for more information
+Note for devs/contributors: to run do ```npm install``` then ```bash run.sh```, but you need a certificate and a website key to run it. Join my discord for more information.
