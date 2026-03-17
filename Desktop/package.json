@@ -1,0 +1,49 @@
+{
+  "name": "yapzac-desktop",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "src/main.js",
+  "author": "Coded by Zach",
+  "license": "MIT",
+  "scripts": {
+    "dev": "electron .",
+    "pack": "electron-builder --dir",
+    "build": "electron-builder --win nsis --x64"
+  },
+  "devDependencies": {
+    "electron": "^39.1.2",
+    "electron-builder": "^25.0.5"
+  },
+  "build": {
+    "appId": "com.codedbyzach.yapzac",
+    "productName": "YapZac",
+    "directories": {
+      "buildResources": "build",
+      "output": "dist"
+    },
+    "files": [
+      "src/**/*",
+      "build/icon.ico"
+    ],
+    "asar": true,
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "requestedExecutionLevel": "asInvoker",
+      "icon": "build/icon.ico",
+      "publisherName": "Coded by Zach"
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": false,
+      "deleteAppDataOnUninstall": false
+    }
+  }
+}
