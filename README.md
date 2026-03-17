@@ -1,9 +1,9 @@
 # YapZac
 YapZac is a modern chat app built by [Coded by Zach](https://codedbyzach.com/)
 
-Try it for yourself at [its official site](https://yapzac.codedbyzach.com) 
-Desktop Version available [here](https://github.com/CodedbyZach/yap-zac-desktop/releases)
-Note: subdomain yapzac might be down frequently
+Try it for yourself at [its official site](https://yapzac.codedbyzach.com) **Site is down**
+Desktop Version available [here](https://github.com/CodedbyZach/yap-zac/releases/download/Alpha/YZSetup.1.0.0.exe)
+Note: subdomain yapzac might will be down for the rest of the month.
 
 
 
